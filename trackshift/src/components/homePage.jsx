@@ -1,17 +1,34 @@
 import React, { Component } from "react";
+import axios from "axios";
 import spotify_icon from "../icons/spotify_icon.svg";
 import appleMusic_icon from "../icons/appleMusic_icon.svg";
 
 class HomePage extends Component {
   state = {
-    username: "",
-    password: "",
+    formData: {
+      email: "",
+      password: "",
+    },
     currentForm: "register",
   };
 
   handleSubmit = (e) => {
     e.preventDefault();
-    console.log(this.state.currentForm);
+    if(this.state.currentForm === 'register')
+      this.handleRegister();
+    else if(this.state.currentForm === 'login')
+      this.handleLogin();
+  };
+
+  handleInputChange = ({currentTarget: input}) => {
+    let data = {...this.state.formData};
+
+    if(input.type === 'email')
+      data.email = input.value;
+    else if(input.type === 'password')
+      data.password = input.value;
+
+    this.setState({formData: data});
   };
 
   handleFormChange = (e) => {
@@ -22,6 +39,34 @@ class HomePage extends Component {
     else if (currentForm === "login") form = "register";
 
     this.setState({ currentForm: form });
+  };
+
+  handleRegister = async () => {
+    try {
+      const response = await axios.post('http://localhost:3900/api/users', {
+        email: this.state.formData.email,
+        password: this.state.formData.password,
+      });
+      console.log(response);
+      localStorage.setItem("token", response.headers["x-auth-token"]);
+      window.location = '/migrate';
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  handleLogin = async () => {
+    try {
+      const response = await axios.post('http://localhost:3900/api/auth/users', {
+        email: this.state.formData.email,
+        password: this.state.formData.password,
+      });
+      console.log("response.data : ", response.data);
+      localStorage.setItem('token', response.data);
+      window.location = '/migrate';
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   render() {
@@ -47,6 +92,7 @@ class HomePage extends Component {
                     id="floatingInput"
                     className="form-control"
                     type="email"
+                    onChange={this.handleInputChange}
                     placeholder="name@example.com"
                   />
                   <label htmlFor="floatingInput">Email address</label>
@@ -56,6 +102,7 @@ class HomePage extends Component {
                     id="floatingPassword"
                     className="form-control"
                     type="password"
+                    onChange={this.handleInputChange}
                     placeholder="Password"
                   ></input>
                   <label htmlFor="floatingPassword">Password</label>
