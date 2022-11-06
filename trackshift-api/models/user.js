@@ -16,6 +16,27 @@ const userSchema = new mongoose.Schema({
     maxlength: 1024,
     required: true,
   },
+  spotify_auth_token: {
+    timeCreated: {
+      type: Date,
+    },
+    token: {
+      type: String,
+      default: ""      
+    }
+  },
+  spotify_refresh_token: {
+    type: String,
+    default: ""
+  },
+  apple_auth_token: {
+    type: String,
+    default: ""
+  },
+  apple_refresh_token: {
+    type: String,
+    default: ""
+  }
 });
 
 userSchema.methods.generateAuthToken = function () {

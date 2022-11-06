@@ -21,14 +21,18 @@ class App extends Component {
 
   render() {
     const user = this.getCurrentUser();
+    const queryString = window.location.search;
+    const urlParams = new URLSearchParams(queryString);
+
     console.log("user: ", user);
+    console.log("urlParams: ", urlParams.get('ki'));
     return (
       <React.Fragment>
         <NavBar user={user}/>
         <Routes>
           <Route
             path="/migrate"
-            element={(user) ? <MigratePage/> : <Navigate to='/'/> }
+            element={(user) ? <MigratePage urlParams={urlParams}/> : <Navigate to='/'/> }
             />
           <Route path="/" element={<HomePage />} />
         </Routes>

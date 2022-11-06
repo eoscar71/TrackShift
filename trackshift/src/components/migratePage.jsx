@@ -1,8 +1,11 @@
 import React, { Component } from "react";
+import axios from 'axios';
+import querystring from 'querystring';
 import PlaylistList from "./common/playlistList";
 import * as spotify from "../fakeSpotifyService";
 import * as appleMusic from "../fakeAppleMusicService";
 
+axios.defaults.headers.common["x-auth-token"] = localStorage.getItem('token');
 class MigratePage extends Component {
   state = {
     fromPlaylists: [],
@@ -10,16 +13,34 @@ class MigratePage extends Component {
     selectedPlaylists: [],
   };
 
-  handlePlatformSelect = (selection, listType) => {
+  componentDidMount() {
+  }
+
+  handlePlatformSelect = async (selection, listType) => {
     let playlists;
 
-    if (selection === "spotify") playlists = spotify.getPlaylists();
+    if (selection === "spotify") {
+      const jwt = localStorage.getItem('token');
+      window.location='http://localhost:3900/api/auth/spotify?' +
+         querystring.stringify({jwt: jwt});
+      console.log('Welcome back!');
+      
+      playlists = spotify.getPlaylists();
+    }
     else if (selection === "appleMusic")
       playlists = appleMusic.getAMPlaylists();
 
     if (listType === "migrateFrom") this.setState({ fromPlaylists: playlists });
     else if (listType === "migrateTo")
       this.setState({ toPlaylists: playlists });
+  };
+
+  getPlaylists = async (code, state) => {
+    const playlists = await axios.post('http://localhost:3900/api/auth/spotify/callback', {
+      code: code,
+      state: state
+    });
+    console.log(playlists);
   };
 
   handlePlaylistSelect = (playlist) => {
@@ -35,6 +56,11 @@ class MigratePage extends Component {
   };
 
   render() {
+    if(this.props.urlParams.get("state") && this.props.urlParams.get('code'))
+    {
+      this.getPlaylists(this.props.urlParams.get('code'), this.props.urlParams.get('state'));
+    }
+
     console.log(this.state.selectedPlaylists);
     return (
       <div className="migratePage">

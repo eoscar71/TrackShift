@@ -1,3 +1,5 @@
 {
-  "jwtPrivateKey": "trackshift_jwtPrivateKey"
+  "jwtPrivateKey": "trackshift_jwtPrivateKey",
+  "spotify_client_id": "spotify_client_id",
+  "spotify_client_secret": "spotify_client_secret"
 }
