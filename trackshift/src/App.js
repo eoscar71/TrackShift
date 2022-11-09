@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { Routes, Route, Navigate } from "react-router";
 import HomePage from "./components/homePage";
 import MigratePage from "./components/migratePage";
+import AuthRedirect from './components/authRedirect';
 import NavBar from "./components/navBar";
 import jwtDecode from "jwt-decode";
 import "./App.css";
@@ -25,11 +26,14 @@ class App extends Component {
     const urlParams = new URLSearchParams(queryString);
 
     console.log("user: ", user);
-    console.log("urlParams: ", urlParams.get('ki'));
     return (
       <React.Fragment>
         <NavBar user={user}/>
         <Routes>
+          <Route
+            path="/auth-redirect"
+            element={(user) ? <AuthRedirect urlParams={urlParams}/> : <Navigate to='/'/> }
+            />
           <Route
             path="/migrate"
             element={(user) ? <MigratePage urlParams={urlParams}/> : <Navigate to='/'/> }

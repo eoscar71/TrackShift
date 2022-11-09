@@ -67,6 +67,7 @@ router.post('/playlists', async (req, res) => {
 
     spotifyApi.setAccessToken(user.spotify_auth_token.token);
 
+    let createdPlaylists = [];
     const playlists = req.body;
     let tracks;
     for(let playlist of playlists)
@@ -81,9 +82,9 @@ router.post('/playlists', async (req, res) => {
 
         const { body } = await spotifyApi.createPlaylist(playlist.name);
         let createdPlaylist = await spotifyApi.addTracksToPlaylist(body.id, tracks);
-        console.log(createdPlaylist);
+        createdPlaylists.push(createdPlaylist);
     }
-    res.send(tracks);
+    res.send("Playlists created.");
 });
 
 async function refreshAccessToken(user) {
@@ -92,6 +93,7 @@ async function refreshAccessToken(user) {
         clientSecret: config.get('spotify_client_secret'),
         refreshToken: user.spotify_refresh_token,
     });
+
     const {body} = await spotifyApi.refreshAccessToken();
     const updatedUser = await User.findByIdAndUpdate(user._id, {
         spotify_auth_token: {
@@ -100,6 +102,7 @@ async function refreshAccessToken(user) {
         }
     },
     {new: true});
+
     console.log('ACCESS TOKEN REFRESHED.');
     return updatedUser;
 }

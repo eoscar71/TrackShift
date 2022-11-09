@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import axios from 'axios';
 import spotify_icon from "../../icons/spotify_icon.svg";
 import appleMusic_icon from "../../icons/appleMusic_icon.svg";
 
@@ -10,9 +11,9 @@ class PlaylistList extends Component {
   handleShowTracks = (playlist) => {
     let tracks = [...this.state.showTracks];
 
-    if (tracks.find((p) => p === playlist.playlistName))
-      tracks = tracks.filter((p) => p !== playlist.playlistName);
-    else tracks.push(playlist.playlistName);
+    if (tracks.find((p) => p === playlist.name))
+      tracks = tracks.filter((p) => p !== playlist.name);
+    else tracks.push(playlist.name);
 
     this.setState({ showTracks: tracks });
   };
@@ -47,8 +48,13 @@ class PlaylistList extends Component {
     return tracks.map((track) => {
       return (
         <div className="list-group-item d-flex">
-          <ul>
-            <li>{track.title}</li>
+          <ul className="tracklist-item">
+            <li>
+              {track.trackName}
+              <small className="d-block text-muted">
+              {track.artistName}
+              </small>
+            </li>
           </ul>
         </div>
       );
@@ -56,19 +62,19 @@ class PlaylistList extends Component {
   }
 
   renderPlaylists() {
-    const { playlists, onPlaylistSelect } = this.props;
+    const { playlists : playlistObject, onPlaylistSelect } = this.props;
     const { showTracks } = this.state;
-    console.log(showTracks);
+    const { playlists } = playlistObject;
     return (
       <div className="list-group border-bottom rounded-0 rounded-bottom scrollarea">
         {playlists.map((playlist) => {
           const tracklistRender = showTracks.find(
-            (p) => p === playlist.playlistName
+            (p) => p === playlist.name
           );
 
           const checkboxRender = this.props.listType === "migrateFrom";
           return (
-            <React.Fragment key={playlist.playlistName}>
+            <React.Fragment key={playlist.name}>
               <div className="list-group-item d-flex align-items-center justify-content-between">
                 <div className="d-flex gap-2">
                   <span className="d-inline-block">
@@ -84,7 +90,7 @@ class PlaylistList extends Component {
                   <label>
                     <div>
                       <span>
-                        {playlist.playlistName}
+                        {playlist.name}
                         <small className="d-block text-muted">
                           {playlist.tracks.length + " "}tracks
                         </small>
@@ -110,16 +116,23 @@ class PlaylistList extends Component {
   }
 
   render() {
-    const { playlists } = this.props;
+    const platform = this.props.playlists.platform;
+    const {listType} = this.props;
+    let listHeaderMessage = 'Migrating ';
+
+    if(listType==='migrateTo')
+      listHeaderMessage += 'to ';
+    else if(listType==='migrateFrom')
+      listHeaderMessage += 'from ';
+    
     return (
       <span className="playlistList border rounded d-inline-flex flex-column align-items-stretch flex-shrink-0 bg-white">
-        <a
-          href="/"
+        <div
           className="listHeader d-flex flex-shrink-0 p-3 link-dark text-decoration-none rounded-top border-bottom"
         >
-          <span className="fs-5 fw-semibold">List group</span>
-        </a>
-        {playlists.length === 0
+          <span className="fs-5 fw-semibold">{listHeaderMessage}</span>
+        </div>
+        {!platform
           ? this.renderPlatformSelect()
           : this.renderPlaylists()}
       </span>

@@ -1,67 +1,57 @@
 import React, { Component } from "react";
-import axios from 'axios';
-import querystring from 'querystring';
 import PlaylistList from "./common/playlistList";
-import * as spotify from "../fakeSpotifyService";
+import * as Spotify from "../services/spotifyService";
 import * as appleMusic from "../fakeAppleMusicService";
 
-axios.defaults.headers.common["x-auth-token"] = localStorage.getItem('token');
 class MigratePage extends Component {
   state = {
-    fromPlaylists: [],
-    toPlaylists: [],
+    fromPlaylists: {
+      platform: null,
+      playlists: [],
+    },
+    toPlaylists: {
+      platform: null,
+      playlists: [],
+    },
     selectedPlaylists: [],
   };
 
-  componentDidMount() {
-  }
-
   handlePlatformSelect = async (selection, listType) => {
-    let playlists;
+    let playlists = {};
 
-    if (selection === "spotify") {
-      const jwt = localStorage.getItem('token');
-      window.location='http://localhost:3900/api/auth/spotify?' +
-         querystring.stringify({jwt: jwt});
-      console.log('Welcome back!');
-      
-      playlists = spotify.getPlaylists();
+    if (selection === "spotify")
+    {
+      playlists.platform = "spotify";
+      if (localStorage.getItem("hasSpotifyAuth") === "false")
+        await Spotify.authenticateUser();
+
+      playlists.playlists = await Spotify.getPlaylists();
     }
     else if (selection === "appleMusic")
-      playlists = appleMusic.getAMPlaylists();
+      console.log("Apple Music selected");
 
-    if (listType === "migrateFrom") this.setState({ fromPlaylists: playlists });
+    if (listType === "migrateFrom")
+      this.setState({ fromPlaylists: playlists });
     else if (listType === "migrateTo")
       this.setState({ toPlaylists: playlists });
-  };
-
-  getPlaylists = async (code, state) => {
-    const playlists = await axios.post('http://localhost:3900/api/auth/spotify/callback', {
-      code: code,
-      state: state
-    });
-    console.log(playlists);
   };
 
   handlePlaylistSelect = (playlist) => {
     let playlists = [...this.state.selectedPlaylists];
 
-    if (playlists.find((p) => p.playlistName === playlist.playlistName))
-      playlists = playlists.filter(
-        (p) => p.playlistName !== playlist.playlistName
-      );
+    if (playlists.find((p) => p.name === playlist.name))
+      playlists = playlists.filter((p) => p.name !== playlist.name);
     else playlists.push(playlist);
 
     this.setState({ selectedPlaylists: playlists });
   };
 
   render() {
-    if(this.props.urlParams.get("state") && this.props.urlParams.get('code'))
-    {
-      this.getPlaylists(this.props.urlParams.get('code'), this.props.urlParams.get('state'));
-    }
-
-    console.log(this.state.selectedPlaylists);
+    const { fromPlaylists, toPlaylists, selectedPlaylists } = this.state;
+    const enableMigrateButton =
+      fromPlaylists.platform !== "" &&
+      toPlaylists.platform !== "" &&
+      selectedPlaylists.length > 0;
     return (
       <div className="migratePage">
         <PlaylistList
@@ -70,7 +60,13 @@ class MigratePage extends Component {
           onPlatformSelect={this.handlePlatformSelect}
           onPlaylistSelect={this.handlePlaylistSelect}
         />
-        <button className="btn btn-migrate btn-primary">
+        <button
+          className={
+            enableMigrateButton
+              ? "btn btn-migrate btn-primary"
+              : "btn btn-migrate btn-primary disabled"
+          }
+        >
           Migrate playlists
         </button>
         <PlaylistList

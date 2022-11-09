@@ -69,6 +69,12 @@ input {
   margin-right: 70px;
 }
 
+.tracklist-item {
+  list-style-type: none;
+  padding: 0;
+  margin-bottom: 0;
+}
+
 .show-tracks {
   font-size: x-small;
   font-weight: bold;

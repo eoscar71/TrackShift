@@ -1,6 +1,5 @@
 const express = require('express');
 const request = require('request');
-const cors = require('cors');
 const config = require('config');
 const jwt = require("jsonwebtoken");
 const bcrypt = require('bcrypt');
@@ -41,7 +40,7 @@ router.get("/spotify", (req, res) => {
     let scope = "user-read-private user-read-email playlist-read-private playlist-modify-private playlist-modify-public";
     // for client-side authentication process...
     const token = req.query.jwt;
-    const redirect_uri = "http://localhost:3000/migrate";
+    const redirect_uri = "http://localhost:3000/auth-redirect";
     // const token = req.headers('x-auth-token');
     // const redirect_uri = 'http://localhost:3000/api/auth/spotify/callback'
     res.cookie(userJwt, token);
@@ -59,7 +58,7 @@ router.get("/spotify", (req, res) => {
     });
     
     router.post("/spotify/callback", (req, res) => {
-      const redirect_uri = "http://localhost:3000/migrate";
+      const redirect_uri = "http://localhost:3000/auth-redirect";
     // const redirect_uri = 'http://localhost:3000/api/auth/spotify/callback'
     //   console.log(req.body);
       let code = req.body.code || null;
@@ -98,7 +97,6 @@ router.get("/spotify", (req, res) => {
         request.post(authOptions, async function (error, response, body) {
             if (!error && response.statusCode === 200) {
 
-                console.log('body -- ', body);
                 let access_token = body.access_token;
                 let refresh_token = body.refresh_token;
 
@@ -112,7 +110,7 @@ router.get("/spotify", (req, res) => {
                   spotify_refresh_token: refresh_token
                 });
                 
-              res.send('USER AUTHENTICATED.');
+              res.send(true);
               console.log('Completed auth.');
           }
         });
