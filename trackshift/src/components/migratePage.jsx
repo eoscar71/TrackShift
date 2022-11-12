@@ -26,6 +26,7 @@ class MigratePage extends Component {
         await Spotify.authenticateUser();
 
       playlists.playlists = await Spotify.getPlaylists();
+      console.log('Playlists fetched.');
     }
     else if (selection === "appleMusic")
       console.log("Apple Music selected");
@@ -49,8 +50,8 @@ class MigratePage extends Component {
   render() {
     const { fromPlaylists, toPlaylists, selectedPlaylists } = this.state;
     const enableMigrateButton =
-      fromPlaylists.platform !== "" &&
-      toPlaylists.platform !== "" &&
+      fromPlaylists.platform !== null &&
+      toPlaylists.platform !== null &&
       selectedPlaylists.length > 0;
     return (
       <div className="migratePage">

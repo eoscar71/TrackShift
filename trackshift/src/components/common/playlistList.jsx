@@ -1,7 +1,5 @@
 import React, { Component } from "react";
-import axios from 'axios';
-import spotify_icon from "../../icons/spotify_icon.svg";
-import appleMusic_icon from "../../icons/appleMusic_icon.svg";
+import PlatformSelect from "./platformSelect";
 
 class PlaylistList extends Component {
   state = {
@@ -18,32 +16,6 @@ class PlaylistList extends Component {
     this.setState({ showTracks: tracks });
   };
 
-  renderPlatformSelect() {
-    const { onPlatformSelect, listType } = this.props;
-    return (
-      <React.Fragment>
-        <p className="text-center mt-5">
-          Connect the account you want to migrate your playlists{" "}
-          {listType === "migrateFrom" ? "from" : "to"}:
-        </p>
-        <div className="d-flex justify-content-center">
-          <img
-            className="clickableImg"
-            onClick={() => onPlatformSelect("spotify", listType)}
-            src={spotify_icon}
-            alt=""
-          />
-          <img
-            className="clickableImg"
-            onClick={() => onPlatformSelect("appleMusic", listType)}
-            src={appleMusic_icon}
-            alt=""
-          />
-        </div>
-      </React.Fragment>
-    );
-  }
-
   renderTracklist(tracks) {
     return tracks.map((track) => {
       return (
@@ -51,9 +23,7 @@ class PlaylistList extends Component {
           <ul className="tracklist-item">
             <li>
               {track.trackName}
-              <small className="d-block text-muted">
-              {track.artistName}
-              </small>
+              <small className="d-block text-muted">{track.artistName}</small>
             </li>
           </ul>
         </div>
@@ -62,15 +32,13 @@ class PlaylistList extends Component {
   }
 
   renderPlaylists() {
-    const { playlists : playlistObject, onPlaylistSelect } = this.props;
+    const { playlists: playlistObject, onPlaylistSelect } = this.props;
     const { showTracks } = this.state;
     const { playlists } = playlistObject;
     return (
       <div className="list-group border-bottom rounded-0 rounded-bottom scrollarea">
         {playlists.map((playlist) => {
-          const tracklistRender = showTracks.find(
-            (p) => p === playlist.name
-          );
+          const tracklistRender = showTracks.find((p) => p === playlist.name);
 
           const checkboxRender = this.props.listType === "migrateFrom";
           return (
@@ -117,24 +85,25 @@ class PlaylistList extends Component {
 
   render() {
     const platform = this.props.playlists.platform;
-    const {listType} = this.props;
-    let listHeaderMessage = 'Migrating ';
+    const { onPlatformSelect, listType } = this.props;
+    let listHeaderMessage = "Migrating ";
 
-    if(listType==='migrateTo')
-      listHeaderMessage += 'to ';
-    else if(listType==='migrateFrom')
-      listHeaderMessage += 'from ';
-    
+    if (listType === "migrateTo") listHeaderMessage += "to ";
+    else if (listType === "migrateFrom") listHeaderMessage += "from ";
+
     return (
-      <span className="playlistList border rounded d-inline-flex flex-column align-items-stretch flex-shrink-0 bg-white">
-        <div
-          className="listHeader d-flex flex-shrink-0 p-3 link-dark text-decoration-none rounded-top border-bottom"
-        >
+      <span className="playlistList justify-items-center d-inline-flex border rounded flex-column flex-row flex-shrink-0 bg-white">
+        <div className="d-flex flex-shrink-0 p-3 link-dark text-decoration-none rounded-top border-bottom">
           <span className="fs-5 fw-semibold">{listHeaderMessage}</span>
         </div>
-        {!platform
-          ? this.renderPlatformSelect()
-          : this.renderPlaylists()}
+        {!platform ? (
+          <PlatformSelect
+            onPlatformSelect={onPlatformSelect}
+            listType={listType}
+          />
+        ) : (
+          this.renderPlaylists()
+        )}
       </span>
     );
   }
