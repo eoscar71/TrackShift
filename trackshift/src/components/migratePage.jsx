@@ -14,10 +14,12 @@ class MigratePage extends Component {
       playlists: [],
     },
     selectedPlaylists: [],
+    selectedPlatforms: []
   };
 
   handlePlatformSelect = async (selection, listType) => {
     let playlists = {};
+    let selectedPlatforms = [...this.state.selectedPlatforms];
 
     if (selection === "spotify")
     {
@@ -26,15 +28,19 @@ class MigratePage extends Component {
         await Spotify.authenticateUser();
 
       playlists.playlists = await Spotify.getPlaylists();
+      selectedPlatforms.push(selection);
       console.log('Playlists fetched.');
     }
     else if (selection === "appleMusic")
+    {
       console.log("Apple Music selected");
+      selectedPlatforms.push(selection);
+    }
 
     if (listType === "migrateFrom")
-      this.setState({ fromPlaylists: playlists });
+      this.setState({ fromPlaylists: playlists, selectedPlatforms });
     else if (listType === "migrateTo")
-      this.setState({ toPlaylists: playlists });
+      this.setState({ toPlaylists: playlists, selectedPlatforms });
   };
 
   handlePlaylistSelect = (playlist) => {
@@ -48,7 +54,7 @@ class MigratePage extends Component {
   };
 
   render() {
-    const { fromPlaylists, toPlaylists, selectedPlaylists } = this.state;
+    const { fromPlaylists, toPlaylists, selectedPlaylists, selectedPlatforms } = this.state;
     const enableMigrateButton =
       fromPlaylists.platform !== null &&
       toPlaylists.platform !== null &&
@@ -58,6 +64,7 @@ class MigratePage extends Component {
         <PlaylistList
           listType="migrateFrom"
           playlists={this.state.fromPlaylists}
+          selectedPlatforms = {selectedPlatforms}
           onPlatformSelect={this.handlePlatformSelect}
           onPlaylistSelect={this.handlePlaylistSelect}
         />
@@ -73,6 +80,7 @@ class MigratePage extends Component {
         <PlaylistList
           listType="migrateTo"
           playlists={this.state.toPlaylists}
+          selectedPlatforms = {selectedPlatforms}
           onPlatformSelect={this.handlePlatformSelect}
           onPlaylistSelect={this.handlePlaylistSelect}
         />

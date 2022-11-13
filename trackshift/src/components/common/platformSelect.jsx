@@ -3,7 +3,7 @@ import LoadingSpinner from './loadingSpinner';
 import spotify_icon from "../../icons/spotify_icon.svg";
 import appleMusic_icon from "../../icons/appleMusic_icon.svg";
 
-const PlatformSelect = ({onPlatformSelect, listType}) => {
+const PlatformSelect = ({onPlatformSelect, listType, selectedPlatforms}) => {
     const [loading, setLoading] = useState(false);
     const getPlaylists = useCallback((selection, listType) => {
         setLoading(true);
@@ -19,18 +19,18 @@ const PlatformSelect = ({onPlatformSelect, listType}) => {
                     {listType === "migrateFrom" ? "from" : "to"}:
                   </p>
                   <div className="d-flex justify-content-center">
-                    <img
+                    {!selectedPlatforms.find((p) => p==='spotify') && <img
                       className="clickableImg"
                       onClick={() => getPlaylists('spotify', listType)}
                       src={spotify_icon}
                       alt=""
-                    />
-                    <img
+                    />}
+                    {!selectedPlatforms.find((p) => p==='appleMusic') && <img
                       className="clickableImg"
                       onClick={() => getPlaylists('appleMusic', listType)}
                       src={appleMusic_icon}
                       alt=""
-                    />
+                    />}
                   </div>
             </div>}
             {loading && <LoadingSpinner/>}

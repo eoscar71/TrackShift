@@ -3,7 +3,8 @@ import { Routes, Route, Navigate } from "react-router";
 import HomePage from "./components/homePage";
 import MigratePage from "./components/migratePage";
 import AuthRedirect from './components/authRedirect';
-import NavBar from "./components/navBar";
+import WithNav from './components/common/withNav';
+import WithoutNav from './components/common/withoutNav';
 import jwtDecode from "jwt-decode";
 import "./App.css";
 import "animate.css";
@@ -28,17 +29,32 @@ class App extends Component {
     console.log("user: ", user);
     return (
       <React.Fragment>
-        <NavBar user={user}/>
         <Routes>
-          <Route
-            path="/auth-redirect"
-            element={(user) ? <AuthRedirect urlParams={urlParams}/> : <Navigate to='/'/> }
-            />
-          <Route
-            path="/migrate"
-            element={(user) ? <MigratePage urlParams={urlParams}/> : <Navigate to='/'/> }
-            />
-          <Route path="/" element={<HomePage />} />
+            <Route element={<WithoutNav/>}>
+              <Route
+                path="/auth-redirect"
+                element={
+                  user ? (
+                    <AuthRedirect urlParams={urlParams} />
+                  ) : (
+                    <Navigate to="/" />
+                  )
+                }
+              />
+            </Route>
+            <Route element={<WithNav user={user}/>}>
+              <Route
+                path="/migrate"
+                element={
+                  user ? (
+                    <MigratePage urlParams={urlParams} />
+                  ) : (
+                    <Navigate to="/" />
+                  )
+                }
+              />
+              <Route path="/" element={<HomePage />} />
+            </Route>
         </Routes>
       </React.Fragment>
     );

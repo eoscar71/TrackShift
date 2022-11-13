@@ -85,7 +85,7 @@ class PlaylistList extends Component {
 
   render() {
     const platform = this.props.playlists.platform;
-    const { onPlatformSelect, listType } = this.props;
+    const { onPlatformSelect, listType, selectedPlatforms } = this.props;
     let listHeaderMessage = "Migrating ";
 
     if (listType === "migrateTo") listHeaderMessage += "to ";
@@ -99,6 +99,7 @@ class PlaylistList extends Component {
         {!platform ? (
           <PlatformSelect
             onPlatformSelect={onPlatformSelect}
+            selectedPlatforms={selectedPlatforms}
             listType={listType}
           />
         ) : (
