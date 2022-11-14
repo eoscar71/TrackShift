@@ -1,27 +1,15 @@
 const express = require('express');
 const SpotifyWebApi = require('spotify-web-api-node');
-const {User} = require('../models/user');
-const jwt = require("jsonwebtoken");
-const Joi = require('joi');
 const _ = require('lodash');
-const config = require('config');
+const userAuth = require('../middleware/userAuth');
+const spotifyAuth = require('../middleware/spotifyAuth');
 
 const router = express.Router();
 
-router.get('/playlists', async (req, res) => {
-    const userJwt = req.header('x-auth-token');
-    const decodedJwt = jwt.verify(userJwt, config.get('jwtPrivateKey'));
-
-    let user = await User.findById(decodedJwt._id);
-
+router.get('/playlists', [userAuth, spotifyAuth], async (req, res) => {
+    const userToken = req.user.spotify_auth_token.token;
     const spotifyApi = new SpotifyWebApi();
-
-    const timeElapsed = (Date.now() - user.spotify_auth_token.timeCreated) / 1000;
-    console.log('time elapsed: ', timeElapsed);
-    if(timeElapsed >= 3300)
-        user = await refreshAccessToken(user);
-
-    spotifyApi.setAccessToken(user.spotify_auth_token.token);
+    spotifyApi.setAccessToken(userToken);
 
     const {body : spotifyUserInfo} = await spotifyApi.getMe();
     const spotifyUserId = _.pick(spotifyUserInfo, ['id']);
@@ -52,20 +40,10 @@ router.get('/playlists', async (req, res) => {
     res.send(playlists);
 });
 
-router.post('/playlists', async (req, res) => {
-    const userJwt = req.header('x-auth-token');
-    const decodedJwt = jwt.verify(userJwt, config.get('jwtPrivateKey'));
-
-    let user = await User.findById(decodedJwt._id);
-
+router.post('/playlists', [userAuth, spotifyAuth], async (req, res) => {
+    const userToken = req.user.spotify_auth_token.token;
     const spotifyApi = new SpotifyWebApi();
-
-    const timeElapsed = (Date.now() - user.spotify_auth_token.timeCreated) / 1000;
-    console.log('time elapsed: ', timeElapsed);
-    if(timeElapsed >= 3300)
-        user = await refreshAccessToken(user);
-
-    spotifyApi.setAccessToken(user.spotify_auth_token.token);
+    spotifyApi.setAccessToken(userToken);
 
     let createdPlaylists = [];
     const playlists = req.body;
@@ -86,25 +64,5 @@ router.post('/playlists', async (req, res) => {
     }
     res.send("Playlists created.");
 });
-
-async function refreshAccessToken(user) {
-    const spotifyApi = new SpotifyWebApi({
-        clientId: config.get('spotify_client_id'),
-        clientSecret: config.get('spotify_client_secret'),
-        refreshToken: user.spotify_refresh_token,
-    });
-
-    const {body} = await spotifyApi.refreshAccessToken();
-    const updatedUser = await User.findByIdAndUpdate(user._id, {
-        spotify_auth_token: {
-            timeCreated: Date.now(),
-            token: body.access_token
-        }
-    },
-    {new: true});
-
-    console.log('ACCESS TOKEN REFRESHED.');
-    return updatedUser;
-}
 
 module.exports = router;
