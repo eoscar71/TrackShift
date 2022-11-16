@@ -31,7 +31,7 @@ class App extends Component {
       <React.Fragment>
         <Routes>
             <Route element={<WithoutNav/>}>
-              <Route
+            <Route
                 path="/auth-redirect"
                 element={
                   user ? (
@@ -43,7 +43,7 @@ class App extends Component {
               />
             </Route>
             <Route element={<WithNav user={user}/>}>
-              <Route
+            <Route
                 path="/migrate"
                 element={
                   user ? (
@@ -53,7 +53,7 @@ class App extends Component {
                   )
                 }
               />
-              <Route path="/" element={<HomePage />} />
+              <Route path="/" element={<HomePage user={user}/>} />
             </Route>
         </Routes>
       </React.Fragment>

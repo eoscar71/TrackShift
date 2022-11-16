@@ -1,10 +1,19 @@
 import React, { Component } from "react";
+import AccountSettings from "./accountSettings";
 
 class NavBar extends Component {
+  state = {
+    showAccountSettings: false,
+  };
+
   renderSignedInNav() {
     return (
       <div className="col-md-3 text-end">
-        <button type="button" className="btn btn-outline-primary me-2">
+        <button
+          onClick={() => this.toggleAccountSettings()}
+          type="button"
+          className="btn btn-outline-primary me-2"
+        >
           Account Settings
         </button>
         <button
@@ -45,18 +54,25 @@ class NavBar extends Component {
     window.location = "/";
   }
 
+  toggleAccountSettings = () => {
+    const showAccountSettings = !this.state.showAccountSettings;
+    this.setState({showAccountSettings});
+  };
+
   render() {
     const { user } = this.props;
+    const { showAccountSettings } = this.state;
     return (
-      <header className="d-flex flex-wrap align-items-center justify-content-center justify-content-md-between py-3 mb-4 border-bottom">
-        <a
-          className="d-flex align-items-center mr-3 col-md-3 mb-2 mb-md-0 text-dark text-decoration-none"
-        >
-          {" "}
-          TrackShift
-        </a>
-        {user ? this.renderSignedInNav() : this.renderSignedOutNav()}
-      </header>
+      <React.Fragment>
+        <header className="d-flex flex-wrap align-items-center justify-content-center justify-content-md-between py-3 mb-4 border-bottom">
+          <a className="d-flex align-items-center mr-3 col-md-3 mb-2 mb-md-0 text-dark text-decoration-none">
+            {" "}
+            TrackShift
+          </a>
+          {user ? this.renderSignedInNav() : this.renderSignedOutNav()}
+        </header>
+        {showAccountSettings && <AccountSettings onToggleSettings={this.toggleAccountSettings}/>}
+      </React.Fragment>
     );
   }
 }

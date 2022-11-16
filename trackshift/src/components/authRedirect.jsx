@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import axios from 'axios';
 
+axios.defaults.headers.common["x-auth-token"] = localStorage.getItem("token");
 class AuthRedirect extends Component {
     state = {
         message: "Authenticating..."

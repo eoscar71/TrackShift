@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import NavBar from "./navBar";
 import axios from "axios";
 import spotify_icon from "../icons/spotify_icon.svg";
 import appleMusic_icon from "../icons/appleMusic_icon.svg";
@@ -146,8 +147,7 @@ class HomePage extends Component {
               </form>
             </div>
           </div>
-        </div>
-        <div className="d-flex justify-content-center align-items-center">
+        <div className="d-flex pt-3 justify-content-center align-items-center">
           <h5 className="animate__animated animate__fadeIn inline-block">
             Currently supports:
           </h5>
@@ -161,6 +161,7 @@ class HomePage extends Component {
             className="animate__animated animate__fadeInUp"
             src={appleMusic_icon}
           />
+        </div>
         </div>
       </div>
     );
