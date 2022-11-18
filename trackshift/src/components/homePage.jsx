@@ -66,8 +66,9 @@ class HomePage extends Component {
       });
       console.log("response.data : ", response.data);
       localStorage.setItem('token', response.data);
-      sessionStorage.setItem("hasSpotifyAuth", false);
-      sessionStorage.setItem("hasAppleMusicAuth", false);
+      localStorage.setItem("hasSpotifyAuth", false);
+      localStorage.setItem("hasAppleMusicAuth", false);
+      localStorage.setItem("hasYoutubeAuth", false);
       window.location = '/migrate';
     } catch (error) {
       console.log(error);

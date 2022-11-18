@@ -29,6 +29,19 @@ const userSchema = new mongoose.Schema({
     type: String,
     default: ""
   },
+  youtube_auth_token : {
+    timeCreated: {
+      type: Date,
+    },
+    token: {
+      type: String,
+      default: ''
+    },
+    refreshToken: {
+      type: String,
+      default: ''
+    }
+  },
   apple_auth_token: {
     type: String,
     default: ""

@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import Cookie from 'js-cookie';
 import axios from 'axios';
 
 axios.defaults.headers.common["x-auth-token"] = localStorage.getItem("token");
@@ -9,6 +10,7 @@ class AuthRedirect extends Component {
 
     async authenticateSpotifyUser() {
         const { urlParams } = this.props;
+        Cookie.remove('platformToAuth');
         if(urlParams.get('code') && urlParams.get('state'))
         {
             const successfulAuth = await axios.post('http://localhost:3900/api/auth/spotify/callback', {
@@ -27,8 +29,34 @@ class AuthRedirect extends Component {
             }
         }
     }
+
+    async authenticateYoutubeUser() {
+        const { urlParams } = this.props;
+        Cookie.remove('platformToAuth');
+        if(urlParams.get('code'))
+        {
+            const successfulAuth = await axios.post('http://localhost:3900/api/auth/youtube/callback', {
+                code: urlParams.get('code'),
+            });
+
+            if(successfulAuth)
+            {
+                localStorage['hasYoutubeAuth'] = true;
+            }
+            else
+            {
+                const message = 'Could not authenticate user.';
+                this.setState({message});
+            }
+        }
+    }
     render() {
-        this.authenticateSpotifyUser();
+        let platformToAuth = Cookie.get('platformToAuth');
+        
+        if(platformToAuth==='spotify')
+            this.authenticateSpotifyUser();
+        else if(platformToAuth==='youtube')
+            this.authenticateYoutubeUser();
 
         return (this.state.message);
     }

@@ -2,6 +2,8 @@ import React, {useCallback, useState} from 'react';
 import LoadingSpinner from './loadingSpinner';
 import spotify_icon from "../../icons/spotify_icon.svg";
 import appleMusic_icon from "../../icons/appleMusic_icon.svg";
+import youtubeMusic_icon from "../../icons/youtubeMusic_icon.svg";
+import deezer_icon from "../../icons/deezer_icon.svg";
 
 const PlatformSelect = ({onPlatformSelect, listType, selectedPlatforms}) => {
     const [loading, setLoading] = useState(false);
@@ -25,10 +27,22 @@ const PlatformSelect = ({onPlatformSelect, listType, selectedPlatforms}) => {
                       src={spotify_icon}
                       alt=""
                     />}
-                    {!selectedPlatforms.find((p) => p==='appleMusic') && <img
+                    {/* {!selectedPlatforms.find((p) => p==='appleMusic') && <img
                       className="clickableImg"
                       onClick={() => getPlaylists('appleMusic', listType)}
                       src={appleMusic_icon}
+                      alt=""
+                    />} */}
+                    {!selectedPlatforms.find((p) => p==='youtubeMusic') && <img
+                      className="clickableImg"
+                      onClick={() => getPlaylists('youtubeMusic', listType)}
+                      src={youtubeMusic_icon}
+                      alt=""
+                    />}
+                    {!selectedPlatforms.find((p) => p==='deezer') && <img
+                      className="clickableImg"
+                      onClick={() => getPlaylists('deezer', listType)}
+                      src={deezer_icon}
                       alt=""
                     />}
                   </div>

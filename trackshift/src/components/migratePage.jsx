@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import PlaylistList from "./common/playlistList";
 import * as Spotify from "../services/spotifyService";
+import * as Youtube from "../services/youtubeService";
 import * as appleMusic from "../fakeAppleMusicService";
 
 class MigratePage extends Component {
@@ -34,6 +35,16 @@ class MigratePage extends Component {
     else if (selection === "appleMusic")
     {
       console.log("Apple Music selected");
+      selectedPlatforms.push(selection);
+    }
+    else if (selection === "youtubeMusic")
+    {
+      console.log("YouTube Music selected");
+      playlists.platform = 'youtubeMusic';
+      if(localStorage.getItem('hasYoutubeAuth')==='false')
+        await Youtube.authenticateUser();
+        
+      playlists.playlists = await Spotify.getPlaylists();
       selectedPlatforms.push(selection);
     }
 
