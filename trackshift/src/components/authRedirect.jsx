@@ -50,6 +50,27 @@ class AuthRedirect extends Component {
             }
         }
     }
+
+    async authenticateDeezerUser() {
+        const { urlParams } = this.props;
+        Cookie.remove('platformToAuth');
+        if(urlParams.get('code'))
+        {
+            const successfulAuth = await axios.post('http://localhost:3900/api/auth/deezer/callback', {
+                code: urlParams.get('code'),
+            });
+
+            if(successfulAuth)
+            {
+                localStorage['hasDeezerAuth'] = true;
+            }
+            else
+            {
+                const message = 'Could not authenticate user.';
+                this.setState({message});
+            }
+        }
+    }
     render() {
         let platformToAuth = Cookie.get('platformToAuth');
         
@@ -57,6 +78,8 @@ class AuthRedirect extends Component {
             this.authenticateSpotifyUser();
         else if(platformToAuth==='youtube')
             this.authenticateYoutubeUser();
+        else if(platformToAuth==='deezer')
+            this.authenticateDeezerUser();
 
         return (this.state.message);
     }

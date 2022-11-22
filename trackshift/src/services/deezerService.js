@@ -2,23 +2,17 @@ import axios from "axios";
 import querystring from "querystring";
 
 axios.defaults.headers.common["x-auth-token"] = localStorage.getItem("token");
-export async function getPlaylists() {
-  const { data: playlists } = await axios.get(
-    "http://localhost:3900/api/youtube/playlists"
-  );
-  return playlists;
-}
 
 export async function authenticateUser() {
   const jwt = localStorage.getItem("token");
   const redirect_url =
-    "http://localhost:3900/api/auth/youtube?" +
+    "http://localhost:3900/api/auth/deezer?" +
     querystring.stringify({ jwt: jwt });
   const w = 500;
   const h = 400;
   const left = window.screenX + (window.outerWidth - w) / 2;
   const top = window.screenY + (window.outerHeight - h) / 2.5;
-  const title = `Authenticate -- YouTube Music`;
+  const title = `Authenticate -- Deezer`;
   const popup = window.open(
     redirect_url,
     title,
@@ -28,7 +22,7 @@ export async function authenticateUser() {
     const interval = setInterval(() => {
       let hasAuth;
       try {
-        hasAuth = localStorage.getItem("hasYoutubeAuth");
+        hasAuth = localStorage.getItem("hasDeezerAuth");
       } catch (error) {
         hasAuth = null;
       }

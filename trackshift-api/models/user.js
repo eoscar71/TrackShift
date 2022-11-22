@@ -42,6 +42,10 @@ const userSchema = new mongoose.Schema({
       default: ''
     }
   },
+  deezer_auth_token: {
+    type: String,
+    default: ""
+  },
   apple_auth_token: {
     type: String,
     default: ""

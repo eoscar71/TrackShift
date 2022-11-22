@@ -69,6 +69,7 @@ class HomePage extends Component {
       localStorage.setItem("hasSpotifyAuth", false);
       localStorage.setItem("hasAppleMusicAuth", false);
       localStorage.setItem("hasYoutubeAuth", false);
+      localStorage.setItem("hasDeezerAuth", false);
       window.location = '/migrate';
     } catch (error) {
       console.log(error);

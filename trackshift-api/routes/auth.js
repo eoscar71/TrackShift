@@ -63,6 +63,39 @@ router.get('/youtube', (req, res) => {
   res.redirect(url);
 });
 
+router.get('/deezer', (req, res) => {
+  const app_id = config.get('deezer_client_id');
+  const redirect_uri = 'http://localhost:3000/auth-redirect';
+  const perms = 'basic_access,offline_access,manage_library,listening_history';
+
+  res.cookie('platformToAuth', 'deezer');
+  res.redirect("https://connect.deezer.com/oauth/auth.php?" + 
+  querystring.stringify({
+    app_id: app_id,
+    redirect_uri: redirect_uri,
+    perms: perms
+  }));
+});
+
+router.post('/deezer/callback', [userAuth], (req, res) => {
+  const {code} = req.body;
+  const url = 'https://connect.deezer.com/oauth/access_token.php?' +
+    querystring.stringify({
+      app_id: config.get('deezer_client_id'),
+      secret: config.get('deezer_client_secret'),
+      code: code
+    });
+  request.post(url, async function (error, response, body) {
+    const access_token = body.slice(13);
+    const user = await User.findByIdAndUpdate(req.user._id, {
+      deezer_auth_token: access_token
+    });
+
+    res.send(true);
+    console.log("Completed Deezer auth.");
+  });
+});
+
 router.post('/youtube/callback', [userAuth], async (req, res) => {
   const {code} = req.body;
   const {tokens} = await oauth2Client.getToken(code);
