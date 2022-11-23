@@ -83,10 +83,11 @@ router.post('/deezer/callback', [userAuth], (req, res) => {
     querystring.stringify({
       app_id: config.get('deezer_client_id'),
       secret: config.get('deezer_client_secret'),
-      code: code
+      code: code,
+      output: 'json'
     });
   request.post(url, async function (error, response, body) {
-    const access_token = body.slice(13);
+    const {access_token} = JSON.parse(body);
     const user = await User.findByIdAndUpdate(req.user._id, {
       deezer_auth_token: access_token
     });
