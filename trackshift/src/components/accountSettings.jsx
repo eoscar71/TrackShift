@@ -1,12 +1,33 @@
 import React, { Component } from "react";
+import * as User from '../services/userService';
 
 class AccountSettings extends Component {
   state = {
     currentSelection: "Account Info",
+    formData: {
+      currentPassword: "",
+      newPassword: ""
+    }
   };
 
   handleSettingsSelect = (selection) => {
     this.setState({ currentSelection: selection });
+  };
+
+  handlePasswordChange = async () => {
+    const {formData} = this.state;
+    await User.changePassword(formData.currentPassword, formData.newPassword);
+  };
+
+  handleInputChange = ({currentTarget: input}) => {
+    let data = {...this.state.formData};
+
+    if(input.id === 'currentPassword')
+      data.currentPassword = input.value;
+    else if(input.id === 'newPassword')
+      data.newPassword = input.value;
+
+    this.setState({formData: data});
   };
 
   renderAccountInfo = () => {
@@ -14,7 +35,33 @@ class AccountSettings extends Component {
   };
 
   renderChangePassword = () => {
-    return <h1>Change Password</h1>;
+    return (
+      <div className="d-flex flex-column">
+        <div className="form-floating mb-3">
+          <input
+            id="currentPassword"
+            className="form-control"
+            type="password"
+            onChange={this.handleInputChange}
+            placeholder="password"
+          />
+          <label htmlFor="floatingInput">Current password</label>
+        </div>
+        <div className="form-floating mb-3">
+          <input
+            id="newPassword"
+            className="form-control"
+            type="password"
+            onChange={this.handleInputChange}
+            placeholder="password"
+          />
+          <label htmlFor="floatingInput">New password</label>
+        </div>
+        <button onClick={this.handlePasswordChange} className="w-100 btn btn-lg btn-primary" type="submit">
+          Change password
+        </button>
+      </div>
+    );
   };
 
   renderDeleteAccount = () => {
@@ -33,7 +80,7 @@ class AccountSettings extends Component {
             <ul className="nav nav-pills flex-column mb-auto pt-4">
               {options.map((option) => {
                 return (
-                  <li className="nav-item">
+                  <li key={option} className="nav-item">
                     <a
                       role="button"
                       onClick={() => this.handleSettingsSelect(option)}
@@ -67,7 +114,7 @@ class AccountSettings extends Component {
                 aria-label="Close"
               ></button>
             </div>
-            <div className="d-flex">
+            <div className="d-flex lm-4">
               {/*CONTENT*/}
               {currentSelection === "Account Info" && this.renderAccountInfo()}
               {currentSelection === "Change Password" &&

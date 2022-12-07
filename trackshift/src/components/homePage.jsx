@@ -1,8 +1,8 @@
 import React, { Component } from "react";
-import NavBar from "./navBar";
-import axios from "axios";
+import * as User from '../services/userService';
 import spotify_icon from "../icons/spotify_icon.svg";
-import appleMusic_icon from "../icons/appleMusic_icon.svg";
+import youtubeMusic_icon from "../icons/youtubeMusic_icon.svg";
+import deezer_icon from "../icons/deezer_icon.svg";
 
 class HomePage extends Component {
   state = {
@@ -10,7 +10,7 @@ class HomePage extends Component {
       email: "",
       password: "",
     },
-    currentForm: "register",
+    currentForm: "login",
   };
 
   handleSubmit = (e) => {
@@ -44,14 +44,11 @@ class HomePage extends Component {
 
   handleRegister = async () => {
     try {
-      const response = await axios.post('http://localhost:3900/api/users', {
-        email: this.state.formData.email,
-        password: this.state.formData.password,
-      });
-      console.log(response);
+      const response = await User.register(this.state.formData.email, this.state.formData.password);
       localStorage.setItem("token", response.headers["x-auth-token"]);
       localStorage.setItem("hasSpotifyAuth", false);
-      localStorage.setItem("hasAppleMusicAuth", false);
+      localStorage.setItem("hasYoutubeAuth", false);
+      localStorage.setItem("hasDeezerAuth", false);
       window.location = '/migrate';
     } catch (error) {
       console.log(error);
@@ -60,14 +57,9 @@ class HomePage extends Component {
 
   handleLogin = async () => {
     try {
-      const response = await axios.post('http://localhost:3900/api/auth/users', {
-        email: this.state.formData.email,
-        password: this.state.formData.password,
-      });
-      console.log("response.data : ", response.data);
+      const response = await User.login(this.state.formData.email, this.state.formData.password);
       localStorage.setItem('token', response.data);
       localStorage.setItem("hasSpotifyAuth", false);
-      localStorage.setItem("hasAppleMusicAuth", false);
       localStorage.setItem("hasYoutubeAuth", false);
       localStorage.setItem("hasDeezerAuth", false);
       window.location = '/migrate';
@@ -161,7 +153,11 @@ class HomePage extends Component {
           />
           <img
             className="animate__animated animate__fadeInUp"
-            src={appleMusic_icon}
+            src={youtubeMusic_icon}
+          />
+          <img
+            className="animate__animated animate__fadeInUp"
+            src={deezer_icon}
           />
         </div>
         </div>
