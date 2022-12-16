@@ -3,7 +3,7 @@ import * as User from '../services/userService';
 
 class AccountSettings extends Component {
   state = {
-    currentSelection: "Account Info",
+    currentSelection: "Change Password",
     formData: {
       currentPassword: "",
       newPassword: ""
@@ -17,6 +17,11 @@ class AccountSettings extends Component {
   handlePasswordChange = async () => {
     const {formData} = this.state;
     await User.changePassword(formData.currentPassword, formData.newPassword);
+  };
+
+  handleAccountDelete = async () => {
+    await User.deleteAccount();
+    User.logout();
   };
 
   handleInputChange = ({currentTarget: input}) => {
@@ -57,7 +62,11 @@ class AccountSettings extends Component {
           />
           <label htmlFor="floatingInput">New password</label>
         </div>
-        <button onClick={this.handlePasswordChange} className="w-100 btn btn-lg btn-primary" type="submit">
+        <button
+          onClick={this.handlePasswordChange}
+          className="w-100 btn btn-lg btn-primary"
+          type="submit"
+        >
           Change password
         </button>
       </div>
@@ -65,13 +74,24 @@ class AccountSettings extends Component {
   };
 
   renderDeleteAccount = () => {
-    return <h1>Delete Account</h1>;
+    return (
+      <div>
+        <h6>We're sorry to see you go! Thank you for using TrackShift.</h6>
+        <button
+          onClick={this.handleAccountDelete}
+          className="w-100 btn btn-lg btn-danger"
+          type="submit"
+        >
+          Delete account
+        </button>
+      </div>
+    );
   };
 
   render() {
     const { onToggleSettings } = this.props;
     const { currentSelection } = this.state;
-    const options = ["Account Info", "Change Password", "Delete Account"];
+    const options = ["Change Password", "Delete Account"];
     return (
       <div className="backdrop">
         <div className="overlay d-flex flex-row rounded-4 shadow animate__animated animate__fadeInDown">
@@ -116,7 +136,6 @@ class AccountSettings extends Component {
             </div>
             <div className="d-flex lm-4">
               {/*CONTENT*/}
-              {currentSelection === "Account Info" && this.renderAccountInfo()}
               {currentSelection === "Change Password" &&
                 this.renderChangePassword()}
               {currentSelection === "Delete Account" &&

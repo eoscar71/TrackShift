@@ -10,6 +10,11 @@ export async function changePassword(currentPassword, newPassword) {
     return response;
 }
 
+export async function deleteAccount() {
+    const {data: response} = await axios.delete('http://localhost:3900/api/users');
+    return response;
+}
+
 export async function register(email, password) {
     return axios.post('http://localhost:3900/api/users', {
         email: email,
@@ -22,4 +27,9 @@ export async function login(email, password) {
         email: email,
         password: password
     });
+}
+
+export async function logout() {
+    localStorage.clear();
+    window.location = "/";
 }
