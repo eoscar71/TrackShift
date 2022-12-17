@@ -85,16 +85,36 @@ class PlaylistList extends Component {
 
   render() {
     const platform = this.props.playlists.platform;
-    const { onPlatformSelect, listType, selectedPlatforms } = this.props;
+    const { onPlatformSelect, onPlatformDeselect, listType, selectedPlatforms } = this.props;
     let listHeaderMessage = "Migrating ";
 
     if (listType === "migrateTo") listHeaderMessage += "to ";
     else if (listType === "migrateFrom") listHeaderMessage += "from ";
 
+    listHeaderMessage += platform;
+
+    let headerClassName='undefined ';
+    if(platform==='Spotify')
+      headerClassName='spotify-list-header ';
+    else if(platform==='YouTube Music')
+      headerClassName='youtube-list-header ';
+    else if(platform==='Deezer')
+      headerClassName='deezer-list-header ';
+
     return (
       <span className="playlistList justify-items-center d-inline-flex border rounded flex-column flex-row flex-shrink-0 bg-white">
-        <div className="d-flex flex-shrink-0 p-3 link-dark text-decoration-none rounded-top border-bottom">
-          <span className="fs-5 fw-semibold">{listHeaderMessage}</span>
+        <div
+          className={headerClassName + "d-flex flex-row justify-content-between flex-shrink-0 p-3 text-decoration-none rounded-top border-bottom"}>
+          <span className="d-flex fs-5 fw-semibold">
+            {listHeaderMessage}
+          </span>
+          {headerClassName!='undefined ' && <button
+                type="button"
+                onClick={() => onPlatformDeselect(listType, platform)}
+                className="btn-close mt-1"
+                data-bs-dismiss="modal"
+                aria-label="Close"
+              ></button>}
         </div>
         {!platform ? (
           <PlatformSelect

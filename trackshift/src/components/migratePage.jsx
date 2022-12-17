@@ -3,15 +3,16 @@ import PlaylistList from "./common/playlistList";
 import * as Spotify from "../services/spotifyService";
 import * as Youtube from "../services/youtubeService";
 import * as Deezer from "../services/deezerService";
+import MigrateButton from "./common/migrateButton";
 
 class MigratePage extends Component {
   state = {
     fromPlaylists: {
-      platform: null,
+      platform: "",
       playlists: [],
     },
     toPlaylists: {
-      platform: null,
+      platform: "",
       playlists: [],
     },
     selectedPlaylists: [],
@@ -22,38 +23,34 @@ class MigratePage extends Component {
     let playlists = {};
     let selectedPlatforms = [...this.state.selectedPlatforms];
 
-    if (selection === "spotify")
+    if (selection === "Spotify")
     {
-      playlists.platform = "spotify";
+      playlists.platform = "Spotify";
       if (localStorage.getItem("hasSpotifyAuth") === "false")
         await Spotify.authenticateUser();
 
       playlists.playlists = await Spotify.getPlaylists();
       selectedPlatforms.push(selection);
       console.log("Playlists fetched.");
+
     }
-    else if (selection === "appleMusic")
-    {
-      console.log("Apple Music selected");
-      selectedPlatforms.push(selection);
-    }
-    else if (selection === "youtubeMusic")
+    else if (selection === "YouTube Music")
     {
       console.log("YouTube Music selected");
-      playlists.platform = "youtubeMusic";
+      playlists.platform = "YouTube Music";
       if (localStorage.getItem("hasYoutubeAuth") === "false")
         await Youtube.authenticateUser();
 
       playlists.playlists = await Youtube.getPlaylists();
       selectedPlatforms.push(selection);
     }
-    else if(selection === 'deezer')
+    else if(selection === 'Deezer')
     {
-      playlists.platform = 'deezer';
+      playlists.platform = 'Deezer';
       if(localStorage.getItem("hasDeezerAuth") === 'false')
         await Deezer.authenticateUser();
 
-      playlists.playlists = await Spotify.getPlaylists();
+      playlists.playlists = await Deezer.getPlaylists();
       selectedPlatforms.push(selection);
     }
 
@@ -63,12 +60,28 @@ class MigratePage extends Component {
       this.setState({ toPlaylists: playlists, selectedPlatforms });
   };
 
+  handlePlatformDeselect = (listType, platform) => {
+    const playlists = {
+      platform: "",
+      playlists: []
+    };
+
+    let {selectedPlatforms} = this.state;
+    selectedPlatforms = selectedPlatforms.filter((p) => p!==platform);
+
+    if(listType==='migrateFrom')
+      this.setState({fromPlaylists: playlists, selectedPlatforms});
+    else if(listType==='migrateTo')
+      this.setState({toPlaylists: playlists, selectedPlatforms});
+  };
+
   handlePlaylistSelect = (playlist) => {
     let playlists = [...this.state.selectedPlaylists];
 
     if (playlists.find((p) => p.name === playlist.name))
       playlists = playlists.filter((p) => p.name !== playlist.name);
-    else playlists.push(playlist);
+    else
+      playlists.push(playlist);
 
     this.setState({ selectedPlaylists: playlists });
   };
@@ -77,9 +90,17 @@ class MigratePage extends Component {
     let playlists = [...this.state.selectedPlaylists];
     const { toPlaylists } = this.state;
 
-    if (toPlaylists.platform === "spotify") {
+    if (toPlaylists.platform === "Spotify") {
       await Spotify.createPlaylists(playlists);
       toPlaylists.playlists = await Spotify.getPlaylists();
+    }
+    else if (toPlaylists.platform === "Deezer") {
+      await Deezer.createPlaylists(playlists);
+      toPlaylists.playlists = await Deezer.getPlaylists();
+    }
+    else if (toPlaylists.platform === "YouTube Music") {
+      await Youtube.createPlaylists(playlists);
+      toPlaylists.playlists = await Youtube.getPlaylists();
     }
     this.setState({ toPlaylists });
   };
@@ -99,23 +120,19 @@ class MigratePage extends Component {
           playlists={this.state.fromPlaylists}
           selectedPlatforms={selectedPlatforms}
           onPlatformSelect={this.handlePlatformSelect}
+          onPlatformDeselect={this.handlePlatformDeselect}
           onPlaylistSelect={this.handlePlaylistSelect}
         />
-        <button
-          onClick={this.handlePlaylistMigrate}
-          className={
-            enableMigrateButton
-              ? "btn btn-migrate btn-primary"
-              : "btn btn-migrate btn-primary disabled"
-          }
-        >
-          Migrate playlists
-        </button>
+        <MigrateButton
+          enableMigrateButton={enableMigrateButton}
+          onPlaylistMigrate={this.handlePlaylistMigrate}
+        />
         <PlaylistList
           listType="migrateTo"
           playlists={this.state.toPlaylists}
           selectedPlatforms={selectedPlatforms}
           onPlatformSelect={this.handlePlatformSelect}
+          onPlatformDeselect={this.handlePlatformDeselect}
           onPlaylistSelect={this.handlePlaylistSelect}
         />
       </div>

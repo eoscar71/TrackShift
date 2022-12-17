@@ -81,8 +81,22 @@ img {
   overflow-y: scroll;
 }
 
-.listHeader {
-  background-color: rgb(154, 180, 226);
+.spotify-list-header {
+  background: rgb(2,0,36);
+  background: linear-gradient(62deg, rgba(2,0,36,1) 54%, rgba(16,121,9,1) 100%);
+  color: white;
+}
+
+.youtube-list-header {
+  background: rgb(243,5,5);
+  background: linear-gradient(62deg, rgba(243,5,5,1) 54%, rgba(255,255,255,1) 100%); 
+  color: white;
+}
+
+.deezer-list-header {
+  background: rgb(143,5,243);
+  background: linear-gradient(62deg, rgba(143,5,243,1) 54%, rgba(227,101,0,1) 100%);  
+  color: white;
 }
 
 .App-header {
@@ -121,6 +135,9 @@ img {
   background-color: rgb(239, 235, 235);
 }
 
+/* .listHeader {
+  color: #1759de;
+} */
 .overlay {
   position: relative;
   overflow: hidden;
