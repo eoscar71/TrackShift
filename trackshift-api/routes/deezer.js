@@ -6,6 +6,7 @@ const request = require("request");
 
 const router = express.Router();
 
+// Get user's Deezer playlists
 router.get('/playlists', [userAuth, deezerAuth], async (req, res) => {
     let {data: userPlaylists} = await new Promise((resolve, reject) => {
         const url = 'https://api.deezer.com/user/me/playlists?' +
@@ -35,7 +36,7 @@ router.get('/playlists', [userAuth, deezerAuth], async (req, res) => {
                 resolve(JSON.parse(body));
             });
         });
-        console.log(tracklistData);
+
         for(let i = 0; i < tracklistData.data.length; i++)
             tracks.push(tracklistData.data[i]);
         if(tracklistData.next)
@@ -56,66 +57,72 @@ router.get('/playlists', [userAuth, deezerAuth], async (req, res) => {
     res.send(userPlaylists);
 });
 
+// Create Deezer playlists
 router.post('/playlists', [userAuth, deezerAuth], async (req, res) => {
     const playlists = req.body;
 
     for(playlist of playlists)
     {
-        let newPlaylist = await new Promise((resolve) => {
-            const url = 'https://api.deezer.com/user/me/playlists?' +
-            querystring.stringify({
-                access_token: req.user.deezer_auth_token,
-                title: playlist.name
-            });
-            request.post(url, async function (error, response, body) {
-                resolve(JSON.parse(body));
-            });
-        });
-
-        let tracks = [];
-        for(let i=0; i<playlist.tracks.length; i++)
-        {
-            let track = playlist.tracks[i];
-            let searchQuery = '';
-            if(track.artistName!=='')
-                searchQuery+='artist:\"' + track.artistName + '\" ';
-            searchQuery+='track:\"' + track.trackName + '\"';
-
-            console.log('Search query: ', searchQuery);
-            const url = "https://api.deezer.com/search?" +
+        try {
+            let newPlaylist = await new Promise((resolve) => {
+                const url = 'https://api.deezer.com/user/me/playlists?' +
                 querystring.stringify({
-                    q: searchQuery
+                    access_token: req.user.deezer_auth_token,
+                    title: playlist.name
                 });
-                
-            const {data : searchResults} = await new Promise((resolve) => {
-                request.get(url, function (error, response, body) {
+                request.post(url, async function (error, response, body) {
                     resolve(JSON.parse(body));
                 });
             });
-            
-            if(searchResults.length>0)
+    
+            let tracks = [];
+            for(let i=0; i<playlist.tracks.length; i++)
             {
-                tracks.push(searchResults[0].id);
+                let track = playlist.tracks[i];
+                let searchQuery = '';
+                if(track.artistName!=='')
+                    searchQuery+='artist:\"' + track.artistName + '\" ';
+                searchQuery+='track:\"' + track.trackName + '\"';
+    
+                const url = "https://api.deezer.com/search?" +
+                    querystring.stringify({
+                        q: searchQuery
+                    });
+                    
+                const {data : searchResults} = await new Promise((resolve) => {
+                    request.get(url, function (error, response, body) {
+                        resolve(JSON.parse(body));
+                    });
+                });
+                
+                if(searchResults.length>0)
+                {
+                    if(!tracks.includes(searchResults[0].id))
+                        tracks.push(searchResults[0].id);
+                }
             }
+    
+            const updatedPlaylist = await new Promise((resolve) => {
+                let trackIdString = tracks[0] + ',';
+                for(let i=1; i<tracks.length; i++)
+                {
+                    trackIdString+=`${tracks[i]},`;
+                }
+                const url = `https://api.deezer.com/playlist/${newPlaylist.id}/tracks?` +
+                querystring.stringify({
+                    access_token: req.user.deezer_auth_token, 
+                    songs: trackIdString
+                });
+    
+                request.post(url, function (error, response, body) {
+                    resolve(JSON.parse(body));
+                });
+            });
+            console.log(updatedPlaylist);
         }
-
-        const updatedPlaylist = await new Promise((resolve) => {
-            let trackIdString = tracks[0] + ',';
-            for(let i=1; i<tracks.length; i++)
-            {
-                trackIdString+=`${tracks[i]},`;
-            }
-            const url = `https://api.deezer.com/playlist/${newPlaylist.id}/tracks?` +
-            querystring.stringify({
-                access_token: req.user.deezer_auth_token, 
-                songs: trackIdString
-            });
-
-            request.post(url, function (error, response, body) {
-                resolve(JSON.parse(body));
-            });
-        });
-        console.log(updatedPlaylist);
+        catch(error) {
+            res.send(error);
+        }
     }
     res.send('Done.');
 });

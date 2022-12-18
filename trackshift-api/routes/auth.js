@@ -14,6 +14,7 @@ const oauth2Client = new google.auth.OAuth2(
   'http://localhost:3000/auth-redirect'
 );
 
+// User login endpoint
 router.post("/users", async (req, res) => {
   const { error } = validate(req.body);
   if (error) return res.status(400).send(error.details[0].message);
@@ -27,6 +28,7 @@ router.post("/users", async (req, res) => {
   res.send(user.generateAuthToken());
 });
 
+// Endpoint to begin Spotify auth process
 router.get("/spotify", (req, res) => {
   let state = generateRandomString(16);
   let scope =
@@ -45,6 +47,7 @@ router.get("/spotify", (req, res) => {
   );
 });
 
+// Endpoint to begin YouTube auth process
 router.get('/youtube', (req, res) => {
   const scopes = [
     "https://www.googleapis.com/auth/youtube",
@@ -63,6 +66,7 @@ router.get('/youtube', (req, res) => {
   res.redirect(url);
 });
 
+// Endpoint to begin Deezer auth process
 router.get('/deezer', (req, res) => {
   const app_id = config.get('deezer_client_id');
   const redirect_uri = 'http://localhost:3000/auth-redirect';
@@ -77,6 +81,7 @@ router.get('/deezer', (req, res) => {
   }));
 });
 
+// Endpoint to finalize Deezer auth process (grab access token)
 router.post('/deezer/callback', [userAuth], (req, res) => {
   const {code} = req.body;
   const url = 'https://connect.deezer.com/oauth/access_token.php?' +
@@ -97,10 +102,10 @@ router.post('/deezer/callback', [userAuth], (req, res) => {
   });
 });
 
+// Endpoint to finalize YouTube auth process
 router.post('/youtube/callback', [userAuth], async (req, res) => {
   const {code} = req.body;
   const {tokens} = await oauth2Client.getToken(code);
-  console.log('TOKENS -> ', tokens);
   const {access_token, refresh_token} = tokens;
   
   const user = await User.findByIdAndUpdate(req.user._id, {
@@ -113,6 +118,7 @@ router.post('/youtube/callback', [userAuth], async (req, res) => {
   res.send('Google Auth complete.');
 });
 
+// Endpoint to finalize Spotify auth process
 router.post("/spotify/callback", [userAuth], (req, res) => {
   const redirect_uri = "http://localhost:3000/auth-redirect";
   let code = req.body.code || null;
@@ -166,6 +172,7 @@ router.post("/spotify/callback", [userAuth], (req, res) => {
   }
 });
 
+// Function to help generate "state" parameter for Spotify auth process
 const generateRandomString = function (length) {
   let text = "";
   let possible =
