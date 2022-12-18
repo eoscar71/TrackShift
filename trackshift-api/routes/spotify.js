@@ -6,6 +6,7 @@ const spotifyAuth = require('../middleware/spotifyAuth');
 
 const router = express.Router();
 
+// Get user's Spotify playlists
 router.get('/playlists', [userAuth, spotifyAuth], async (req, res) => {
     const userToken = req.user.spotify_auth_token.token;
     const spotifyApi = new SpotifyWebApi();
@@ -40,6 +41,7 @@ router.get('/playlists', [userAuth, spotifyAuth], async (req, res) => {
     res.send(playlists);
 });
 
+// Create Spotify playlists
 router.post('/playlists', [userAuth, spotifyAuth], async (req, res) => {
     const userToken = req.user.spotify_auth_token.token;
     const spotifyApi = new SpotifyWebApi();
@@ -50,19 +52,32 @@ router.post('/playlists', [userAuth, spotifyAuth], async (req, res) => {
     let tracks;
     for(let playlist of playlists)
     {
+        try {
         tracks = await Promise.all(playlist.tracks.map(async (t) => {
-            const {body : searchResults} = await spotifyApi.searchTracks(`track:${t.trackName} artist:${t.artistName}`);
+            let searchQuery = 'track:' + t.trackName;
+            if(t.artistName!=='')
+                searchQuery+=` artist:${t.artistName}`;
+            const {body : searchResults} = await spotifyApi.searchTracks(searchQuery);
             const {tracks : track} = searchResults;
             
-            let trackID = "spotify:track:" + track.items[0].id;
-            return trackID;
+            if(track.items.length>0 && track.items[0].id)
+                return "spotify:track:" + track.items[0].id;
+            else
+                return null;
         }));
+
+        tracks = tracks.filter((t) => t!==null);
 
         const { body } = await spotifyApi.createPlaylist(playlist.name);
         let createdPlaylist = await spotifyApi.addTracksToPlaylist(body.id, tracks);
         createdPlaylists.push(createdPlaylist);
+        }
+        catch(error) {
+            console.log(error);
+        }
+
     }
-    res.send("Playlists created.");
+    res.send(true);
 });
 
 module.exports = router;
