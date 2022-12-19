@@ -91,7 +91,10 @@ class PlaylistList extends Component {
     if (listType === "migrateTo") listHeaderMessage += "to ";
     else if (listType === "migrateFrom") listHeaderMessage += "from ";
 
-    listHeaderMessage += platform;
+    if(platform!='')
+      listHeaderMessage += platform;
+    else
+      listHeaderMessage += '...';
 
     let headerClassName='undefined ';
     if(platform==='Spotify')

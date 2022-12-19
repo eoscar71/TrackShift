@@ -70,7 +70,7 @@ class MigratePage extends Component {
     selectedPlatforms = selectedPlatforms.filter((p) => p!==platform);
 
     if(listType==='migrateFrom')
-      this.setState({fromPlaylists: playlists, selectedPlatforms});
+      this.setState({fromPlaylists: playlists, selectedPlatforms, selectedPlaylists: []});
     else if(listType==='migrateTo')
       this.setState({toPlaylists: playlists, selectedPlatforms});
   };
