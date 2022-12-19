@@ -43,29 +43,11 @@ class HomePage extends Component {
   };
 
   handleRegister = async () => {
-    try {
-      const response = await User.register(this.state.formData.email, this.state.formData.password);
-      localStorage.setItem("token", response.headers["x-auth-token"]);
-      localStorage.setItem("hasSpotifyAuth", false);
-      localStorage.setItem("hasYoutubeAuth", false);
-      localStorage.setItem("hasDeezerAuth", false);
-      window.location = '/migrate';
-    } catch (error) {
-      console.log(error);
-    }
+      await User.register(this.state.formData.email, this.state.formData.password);
   };
 
   handleLogin = async () => {
-    try {
-      const response = await User.login(this.state.formData.email, this.state.formData.password);
-      localStorage.setItem('token', response.data);
-      localStorage.setItem("hasSpotifyAuth", false);
-      localStorage.setItem("hasYoutubeAuth", false);
-      localStorage.setItem("hasDeezerAuth", false);
-      window.location = '/migrate';
-    } catch (error) {
-      console.log(error);
-    }
+      await User.login(this.state.formData.email, this.state.formData.password);
   };
 
   render() {

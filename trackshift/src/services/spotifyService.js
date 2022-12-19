@@ -1,17 +1,17 @@
-import axios from "axios";
-import querystring from "querystring";
+import http from '../services/httpService';
+import querystring from 'querystring';
+import config from "../config.json";
 
-axios.defaults.headers.common["x-auth-token"] = localStorage.getItem("token");
 export async function getPlaylists() {
-  const { data: playlists } = await axios.get(
-    "http://localhost:3900/api/spotify/playlists"
+  const { data: playlists } = await http.get(
+    config.apiUrl + "/spotify/playlists"
   );
   return playlists;
 }
 
 export async function createPlaylists(playlists) {
-  const { data: createdPlaylists } = await axios.post(
-    "http://localhost:3900/api/spotify/playlists",
+  const { data: createdPlaylists } = await http.post(
+    config.apiUrl + "/spotify/playlists",
     playlists
   );
   return createdPlaylists;
@@ -20,7 +20,7 @@ export async function createPlaylists(playlists) {
 export async function authenticateUser() {
   const jwt = localStorage.getItem("token");
   const redirect_url =
-    "http://localhost:3900/api/auth/spotify?" +
+    config.apiUrl + "/auth/spotify?" +
     querystring.stringify({ jwt: jwt });
   const w = 500;
   const h = 400;

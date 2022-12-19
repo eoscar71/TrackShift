@@ -1,7 +1,6 @@
 import React, {useCallback, useState} from 'react';
 import LoadingSpinner from './loadingSpinner';
 import spotify_icon from "../../icons/spotify_icon.svg";
-import appleMusic_icon from "../../icons/appleMusic_icon.svg";
 import youtubeMusic_icon from "../../icons/youtubeMusic_icon.svg";
 import deezer_icon from "../../icons/deezer_icon.svg";
 
@@ -21,27 +20,21 @@ const PlatformSelect = ({onPlatformSelect, listType, selectedPlatforms}) => {
                     {listType === "migrateFrom" ? "from" : "to"}:
                   </p>
                   <div className="d-flex justify-content-center">
-                    {!selectedPlatforms.find((p) => p==='spotify') && <img
+                    {!selectedPlatforms.find((p) => p==='Spotify') && <img
                       className="clickableImg"
-                      onClick={() => getPlaylists('spotify', listType)}
+                      onClick={() => getPlaylists('Spotify', listType)}
                       src={spotify_icon}
                       alt=""
                     />}
-                    {/* {!selectedPlatforms.find((p) => p==='appleMusic') && <img
+                    {!selectedPlatforms.find((p) => p==='YouTube Music') && <img
                       className="clickableImg"
-                      onClick={() => getPlaylists('appleMusic', listType)}
-                      src={appleMusic_icon}
-                      alt=""
-                    />} */}
-                    {!selectedPlatforms.find((p) => p==='youtubeMusic') && <img
-                      className="clickableImg"
-                      onClick={() => getPlaylists('youtubeMusic', listType)}
+                      onClick={() => getPlaylists('YouTube Music', listType)}
                       src={youtubeMusic_icon}
                       alt=""
                     />}
-                    {!selectedPlatforms.find((p) => p==='deezer') && <img
+                    {!selectedPlatforms.find((p) => p==='Deezer') && <img
                       className="clickableImg"
-                      onClick={() => getPlaylists('deezer', listType)}
+                      onClick={() => getPlaylists('Deezer', listType)}
                       src={deezer_icon}
                       alt=""
                     />}
