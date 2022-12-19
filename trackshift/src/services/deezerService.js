@@ -1,12 +1,26 @@
-import axios from "axios";
-import querystring from "querystring";
+import http from '../services/httpService';
+import querystring from 'querystring';
+import config from "../config.json";
 
-axios.defaults.headers.common["x-auth-token"] = localStorage.getItem("token");
+export async function getPlaylists() {
+    const { data: playlists } = await http.get(
+        config.apiUrl + "/deezer/playlists"
+      );
+      return playlists;
+}
+
+export async function createPlaylists(playlists) {
+    const { data: createdPlaylists } = await http.post(
+      config.apiUrl + "/deezer/playlists",
+      playlists
+    );
+    return createdPlaylists;
+}
 
 export async function authenticateUser() {
   const jwt = localStorage.getItem("token");
   const redirect_url =
-    "http://localhost:3900/api/auth/deezer?" +
+    config.apiUrl + "/auth/deezer?" +
     querystring.stringify({ jwt: jwt });
   const w = 500;
   const h = 400;
