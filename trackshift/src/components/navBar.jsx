@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import * as User from '../services/userService';
 import AccountSettings from "./accountSettings";
 
 class NavBar extends Component {
@@ -50,8 +51,7 @@ class NavBar extends Component {
   }
 
   handleLogout() {
-    localStorage.removeItem("token");
-    window.location = "/";
+    User.logout();
   }
 
   toggleAccountSettings = () => {
@@ -65,13 +65,15 @@ class NavBar extends Component {
     return (
       <React.Fragment>
         <header className="d-flex flex-wrap align-items-center justify-content-center justify-content-md-between py-3 mb-4 border-bottom">
-          <a className="d-flex align-items-center mr-3 col-md-3 mb-2 mb-md-0 text-dark text-decoration-none">
+          <p className="trackshift-logo d-flex align-items-center mr-3 col-md-3 mb-2 mb-md-0 text-dark text-decoration-none">
             {" "}
             TrackShift
-          </a>
+          </p>
           {user ? this.renderSignedInNav() : this.renderSignedOutNav()}
         </header>
-        {showAccountSettings && <AccountSettings onToggleSettings={this.toggleAccountSettings}/>}
+        {showAccountSettings && (
+          <AccountSettings onToggleSettings={this.toggleAccountSettings} />
+        )}
       </React.Fragment>
     );
   }
