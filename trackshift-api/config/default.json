@@ -1,4 +1,6 @@
 {
+  "port": "3900",
+  "db": "mongodb://localhost:27017/trackshift",
   "jwtPrivateKey": "",
   "spotify_client_id": "",
   "spotify_client_secret": "",

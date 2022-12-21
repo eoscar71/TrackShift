@@ -9,17 +9,18 @@ const router = express.Router();
 // Get user's Spotify playlists
 router.get('/playlists', [userAuth, spotifyAuth], async (req, res) => {
     const userToken = req.user.spotify_auth_token.token;
+
     const spotifyApi = new SpotifyWebApi();
     spotifyApi.setAccessToken(userToken);
-
+    
     const {body : spotifyUserInfo} = await spotifyApi.getMe();
     const spotifyUserId = _.pick(spotifyUserInfo, ['id']);
-
-    let {body : userPlaylistData} = await spotifyApi.getUserPlaylists(spotifyUserId);
     
+    let {body : userPlaylistData} = await spotifyApi.getUserPlaylists(spotifyUserId);
+        
     const playlists = await Promise.all(userPlaylistData.items.map(async (p) => {
         const {body : trackData} = await spotifyApi.getPlaylistTracks(p.id);
-        
+            
         const tracks = trackData.items.map((t) => {
             trackItems = {
                 trackName: t.track.name,
@@ -28,7 +29,7 @@ router.get('/playlists', [userAuth, spotifyAuth], async (req, res) => {
             };
             return trackItems;
         });
-        
+            
         const playlist = {
             id: p.id,
             name: p.name,
@@ -37,7 +38,7 @@ router.get('/playlists', [userAuth, spotifyAuth], async (req, res) => {
         };
         return playlist;
     }));
-
+    
     res.send(playlists);
 });
 

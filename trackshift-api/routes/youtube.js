@@ -1,5 +1,6 @@
 const express = require("express");
 const config = require("config");
+const winston = require('winston');
 const userAuth = require("../middleware/userAuth");
 const youtubeAuth = require("../middleware/youtubeAuth");
 const { google } = require("googleapis");
@@ -21,7 +22,6 @@ router.get("/playlists", [userAuth, youtubeAuth], async (req, res) => {
   });
 
   let playlists;
-  try {
     playlists = await youtube.playlists.list({
       part: ["snippet"],
       mine: true,
@@ -50,9 +50,6 @@ router.get("/playlists", [userAuth, youtubeAuth], async (req, res) => {
         return playlist;
       })
     );
-  } catch (error) {
-    console.log(error);
-  }
 
   res.send(playlists);
 });
@@ -81,7 +78,6 @@ router.post("/playlists", [userAuth, youtubeAuth], async (req, res) => {
     tracks = await Promise.all(playlist.tracks.map(async (track) => {
         let searchQuery = track.trackName + ' ';
         searchQuery+=track.artistName;
-        console.log('SEARCH QUERY: ', searchQuery);
 
         const {data: searchResults} = await youtube.search.list({
             part: 'snippet',
@@ -92,20 +88,20 @@ router.post("/playlists", [userAuth, youtubeAuth], async (req, res) => {
         {
             const trackId = searchResults.items[0].id;
             try {
-                const updatedPlaylist = await youtube.playlistItems.insert({
-                    part: 'snippet',
-                    resource: {
-                        snippet: {
-                            playlistId: newPlaylist.id,
-                            resourceId: {
-                                kind: trackId.kind,
-                                videoId: trackId.videoId
-                            }
-                        }
-                    }
-                });
+              const updatedPlaylist = await youtube.playlistItems.insert({
+                  part: 'snippet',
+                  resource: {
+                      snippet: {
+                          playlistId: newPlaylist.id,
+                          resourceId: {
+                              kind: trackId.kind,
+                              videoId: trackId.videoId
+                          }
+                      }
+                  }
+              });
             } catch (error) {
-                res.send(error);
+                winston.error(error.message);
             }
         }
     }));

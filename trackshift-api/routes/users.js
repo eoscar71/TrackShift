@@ -14,17 +14,17 @@ router.post("/", async (req, res) => {
     let user = await User.findOne({email: req.body.email});
     if(user)
         return res.status(400).send('This user is already registered.');
-
+    
     user = new User({
         email: req.body.email,
         password: req.body.password
     });
-
+    
     const salt = await bcrypt.genSalt();
     user.password = await bcrypt.hash(user.password, salt);
-
+    
     user = await user.save();
-
+    
     const token = user.generateAuthToken();
     res.header('x-auth-token', token)
         .header("access-control-expose-headers", "x-auth-token")
@@ -33,30 +33,24 @@ router.post("/", async (req, res) => {
 
 // Change user password
 router.put('/', [userAuth], async (req, res) => {
-    let user = await User.findOne({ email: req.user.email });
-    if (!user)
-        return res.status(400).send("Invalid email.");
-
+    let user = await User.findById(req.user._id);
+        
     const validPassword = await bcrypt.compare(req.body.currentPassword, user.password);
     if (!validPassword)
         return res.status(400).send("Invalid password.");
-
+    
     const salt = await bcrypt.genSalt();
     user.password = await bcrypt.hash(req.body.newPassword, salt);
-
-    user = await user.save();
     
+    user = await user.save();
+        
     res.send(true);
 });
 
 // Delete user account
 router.delete('/', [userAuth], async (req, res) => {
     let user = req.user;
-    try {
-        user = await User.findByIdAndRemove(user._id);
-    } catch (error) {
-        res.send(error);
-    }
+    user = await User.findByIdAndRemove(user._id);
     res.send(true);
 });
 

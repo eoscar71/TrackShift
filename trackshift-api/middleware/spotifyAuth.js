@@ -12,7 +12,6 @@ module.exports = async function (req, res, next) {
 
   req.user = user;
   const timeElapsed = (Date.now() - user.spotify_auth_token.timeCreated) / 1000;
-  console.log("time elapsed: ", timeElapsed);
   if (timeElapsed >= 3300) req.user = await refreshAccessToken(user);
 
   next();
@@ -37,6 +36,5 @@ async function refreshAccessToken(user) {
     { new: true }
   );
 
-  console.log("ACCESS TOKEN REFRESHED.");
   return updatedUser;
 }
