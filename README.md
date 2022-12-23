@@ -10,4 +10,4 @@ Ready to switch music streaming platforms? Make your transition easier with Trac
 ### - Delete your TrackShift account.
 
 ## Demonstration Video
-[![TrackShift Demo](https://i9.ytimg.com/vi_webp/0WfJe-vXFzo/mq2.webp?sqp=CIT8lJ0G-oaymwEmCMACELQB8quKqQMa8AEB-AH-CYAC0AWKAgwIABABGBMgFSh_MA8=&rs=AOn4CLA7JSQ_-H32RjYVFk3Jm6W39xfipA)](https://youtu.be/0WfJe-vXFzo "TrackShift Demo")
+[![TrackShift Demo](https://img.youtube.com/vi/0WfJe-vXFzo/hqdefault.jpg)](https://youtu.be/0WfJe-vXFzo "TrackShift Demo")
