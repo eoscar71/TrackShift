@@ -35,10 +35,6 @@ class AccountSettings extends Component {
     this.setState({formData: data});
   };
 
-  renderAccountInfo = () => {
-    return <h1>Account Info</h1>;
-  };
-
   renderChangePassword = () => {
     return (
       <div className="d-flex flex-column">

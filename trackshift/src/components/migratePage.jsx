@@ -31,12 +31,9 @@ class MigratePage extends Component {
 
       playlists.playlists = await Spotify.getPlaylists();
       selectedPlatforms.push(selection);
-      console.log("Playlists fetched.");
-
     }
     else if (selection === "YouTube Music")
     {
-      console.log("YouTube Music selected");
       playlists.platform = "YouTube Music";
       if (localStorage.getItem("hasYoutubeAuth") === "false")
         await Youtube.authenticateUser();
@@ -108,7 +105,6 @@ class MigratePage extends Component {
   render() {
     const { fromPlaylists, toPlaylists, selectedPlaylists, selectedPlatforms } =
       this.state;
-    console.log(selectedPlaylists);
     const enableMigrateButton =
       fromPlaylists.platform !== null &&
       toPlaylists.platform !== null &&

@@ -2,7 +2,7 @@ import { toast } from "react-toastify";
 import http from '../services/httpService';
 import config from "../config.json";
 
-
+/* Change user password */
 export async function changePassword(currentPassword, newPassword) {
     try {
         const response = await http.put(config.apiUrl + '/users', {
@@ -17,11 +17,13 @@ export async function changePassword(currentPassword, newPassword) {
     }
 }
 
+/* Delete user account */
 export async function deleteAccount() {
     const {data: response} = await http.delete(config.apiUrl + '/users');
     return response;
 }
 
+/* Create new user account */
 export async function register(email, password) {
     try {
         const response = await http.post(config.apiUrl + '/users', {
@@ -41,6 +43,7 @@ export async function register(email, password) {
       }     
 }
 
+/* Login user */
 export async function login(email, password) {
     try {
       const response = await http.post(
@@ -64,11 +67,13 @@ export async function login(email, password) {
     }
 }
 
+/* Logout user */
 export async function logout() {
     localStorage.clear();
     window.location = "/";
 }
 
+/* Populate local storage */
 function setLocalStorageItems() {
     localStorage.setItem("hasSpotifyAuth", false);
     localStorage.setItem("hasYoutubeAuth", false);

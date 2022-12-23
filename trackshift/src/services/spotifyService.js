@@ -2,6 +2,7 @@ import http from '../services/httpService';
 import querystring from 'querystring';
 import config from "../config.json";
 
+/* Get Spotify Playlists */
 export async function getPlaylists() {
   const { data: playlists } = await http.get(
     config.apiUrl + "/spotify/playlists"
@@ -9,6 +10,7 @@ export async function getPlaylists() {
   return playlists;
 }
 
+/* Create Spotify Playlists */
 export async function createPlaylists(playlists) {
   const { data: createdPlaylists } = await http.post(
     config.apiUrl + "/spotify/playlists",
@@ -17,6 +19,7 @@ export async function createPlaylists(playlists) {
   return createdPlaylists;
 }
 
+/* Authenticate Spotify User */
 export async function authenticateUser() {
   const jwt = localStorage.getItem("token");
   const redirect_url =

@@ -2,6 +2,7 @@ import http from '../services/httpService';
 import querystring from 'querystring';
 import config from "../config.json";
 
+/* Get YouTube Music playlists */
 export async function getPlaylists() {
   const { data: playlists } = await http.get(
     config.apiUrl + "/youtube/playlists"
@@ -9,6 +10,7 @@ export async function getPlaylists() {
   return playlists;
 }
 
+/* Create YouTube Music playlists */
 export async function createPlaylists(playlists) {
   const { data: createdPlaylists } = await http.post(
     config.apiUrl + "/youtube/playlists",
@@ -17,6 +19,7 @@ export async function createPlaylists(playlists) {
   return createdPlaylists;
 }
 
+/* Authenticate YouTube Music user */
 export async function authenticateUser() {
   const jwt = localStorage.getItem("token");
   const redirect_url =

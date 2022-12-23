@@ -7,7 +7,7 @@ import AuthRedirect from './components/authRedirect';
 import WithNav from './components/common/withNav';
 import WithoutNav from './components/common/withoutNav';
 import jwtDecode from "jwt-decode";
-import "./App.css";
+import "./css/App.css";
 import "animate.css";
 import "react-toastify/dist/ReactToastify.css";
 
@@ -27,8 +27,7 @@ class App extends Component {
     const user = this.getCurrentUser();
     const queryString = window.location.search;
     const urlParams = new URLSearchParams(queryString);
-
-    console.log("user: ", user);
+    
     return (
       <React.Fragment>
         <ToastContainer />
