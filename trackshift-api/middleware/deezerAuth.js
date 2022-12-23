@@ -7,7 +7,7 @@ module.exports = async function (req, res, next) {
   if (user.deezer_auth_token === "")
     return res
       .status(401)
-      .send("Access denied. User is not authorized by YouTube.");
+      .send("Access denied. User is not authorized by Deezer.");
 
   req.user = user;
   next();
