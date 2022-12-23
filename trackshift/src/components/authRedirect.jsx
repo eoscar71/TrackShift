@@ -1,8 +1,9 @@
 import React, { Component } from 'react';
 import Cookie from 'js-cookie';
-import axios from 'axios';
+import * as Spotify from '../services/spotifyService';
+import * as Deezer from '../services/deezerService';
+import * as Youtube from '../services/youtubeService';
 
-axios.defaults.headers.common["x-auth-token"] = localStorage.getItem("token");
 class AuthRedirect extends Component {
     state = {
         message: "Authenticating..."
@@ -13,11 +14,8 @@ class AuthRedirect extends Component {
         Cookie.remove('platformToAuth');
         if(urlParams.get('code') && urlParams.get('state'))
         {
-            const successfulAuth = await axios.post('http://localhost:3900/api/auth/spotify/callback', {
-                code: urlParams.get('code'),
-                state: urlParams.get('state'),
-            });
-
+            const successfulAuth = await Spotify.finalizeAuth(urlParams.get("code"), urlParams.get("state"));
+            
             if(successfulAuth)
             {
                 localStorage['hasSpotifyAuth'] = true;
@@ -35,9 +33,7 @@ class AuthRedirect extends Component {
         Cookie.remove('platformToAuth');
         if(urlParams.get('code'))
         {
-            const successfulAuth = await axios.post('http://localhost:3900/api/auth/youtube/callback', {
-                code: urlParams.get('code'),
-            });
+            const successfulAuth = await Youtube.finalizeAuth(urlParams.get('code'));
 
             if(successfulAuth)
             {
@@ -56,9 +52,7 @@ class AuthRedirect extends Component {
         Cookie.remove('platformToAuth');
         if(urlParams.get('code'))
         {
-            const successfulAuth = await axios.post('http://localhost:3900/api/auth/deezer/callback', {
-                code: urlParams.get('code'),
-            });
+            const successfulAuth = await Deezer.finalizeAuth(urlParams.get('code'));
 
             if(successfulAuth)
             {

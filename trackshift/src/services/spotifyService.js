@@ -52,3 +52,10 @@ export async function authenticateUser() {
     }, 500);
   });
 }
+
+export async function finalizeAuth(code, state) {
+  return http.post(config.apiUrl + '/auth/spotify/callback', {
+    code: code,
+    state: state
+  });
+}

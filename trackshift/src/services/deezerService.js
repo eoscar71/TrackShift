@@ -52,3 +52,9 @@ export async function authenticateUser() {
     }, 500);
   });
 }
+
+export async function finalizeAuth(code) {
+  return http.post(config.apiUrl + '/auth/deezer/callback', {
+    code: code
+  });
+}
